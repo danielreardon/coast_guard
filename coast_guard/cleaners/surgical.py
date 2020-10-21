@@ -112,7 +112,9 @@ class SurgicalScrubCleaner(cleaners.BaseCleaner):
             if np.shape(template_phs) != np.shape(profile):
                 print('template and profile have different numbers of phase bins')
             err = lambda (amp, phs): amp*clean_utils.fft_rotate(template_phs, phs) - profile
-            params, status = leastsq(err, [1, 0])
+            amp_guess = np.median(profile)/np.median(template_phs)
+            phase_guess = -(np.argmax(profile) - np.argmax(template_phs))
+            params, status = leastsq(err, [amp_guess, phase_guess])
             phs = params[1]
             print('Found template phase offset = ', round(phs, 3))
         
